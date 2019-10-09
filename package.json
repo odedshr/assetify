@@ -1,6 +1,6 @@
 {
 	"name": "assetomat",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "Use Chokidar to watch multiple sources and copy to multiple targets",
 	"main": "index.js",
 	"scripts": {
