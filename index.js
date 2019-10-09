@@ -1,10 +1,10 @@
+const { assets } = require(`${process.cwd()}/package.json`);
 const { watch } = require('chokidar');
-const { assets } = require('./package.json');
+const { basename, join } = require('path');
 
 const fs = require('fs');
-const path = require('path');
 
-assets.map(entry => {
+(assets || []).map(entry => {
 	const targets = toArray(entry.target);
 
 	return toArray(entry.source).map(source => {
@@ -39,7 +39,7 @@ function copyFileSync(source, target) {
 	//if target is a directory a new file with the same name will be created
 	if (fs.existsSync(target)) {
 		if (fs.lstatSync(target).isDirectory()) {
-			targetFile = path.join(target, path.basename(source));
+			targetFile = join(target, basename(source));
 		}
 	}
 
@@ -57,7 +57,7 @@ function copyFolderRecursiveSync(source, target) {
 		verifyFolderExists(target);
 
 		fs.readdirSync(source).forEach(file => {
-			const curSource = path.join(source, file);
+			const curSource = join(source, file);
 
 			if (fs.lstatSync(curSource).isDirectory()) {
 				copyFolderRecursiveSync(curSource, target);
