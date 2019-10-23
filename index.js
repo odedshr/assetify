@@ -41,6 +41,15 @@ function copyFileSync(source, target) {
 		if (fs.lstatSync(target).isDirectory()) {
 			targetFile = join(target, basename(source));
 		}
+	} else {
+		target
+			.substring(0, target.lastIndexOf('/'))
+			.split('/')
+			.reduce((memo, folder) => {
+				memo += folder;
+				verifyFolderExists(memo);
+				return `${memo}/`;
+			}, '');
 	}
 
 	fs.writeFileSync(targetFile, fs.readFileSync(source));
