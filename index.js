@@ -1,14 +1,15 @@
-const { assets } = require(`${process.cwd()}/package.json`);
+const fs = require('fs');
 const { watch } = require('chokidar');
 const { basename, join } = require('path');
 
-const fs = require('fs');
+const assets = require(`${process.cwd()}/package.json`).assets || [];
+const persistent = process.argv.slice(2)[0] === 'once';
 
-(assets || []).map(entry => {
+assets.map(entry => {
 	const targets = toArray(entry.target);
 
 	return toArray(entry.source).map(source => {
-		return watch(source)
+		return watch(source, { persistent })
 			.on('add', path => copy(source, path, targets))
 			.on('change', path => copy(source, path, targets))
 			.on('unlink', path => remove(source, path, targets))
