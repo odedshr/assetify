@@ -3,18 +3,18 @@ const { watch } = require('chokidar');
 const { basename, join } = require('path');
 
 const assets = require(`${process.cwd()}/package.json`).assets || [];
-const persistent = process.argv.slice(2)[0] === 'once';
+const persistent = process.argv.slice(2)[0] !== 'once';
 
-assets.map(entry => {
+assets.map((entry) => {
 	const targets = toArray(entry.target);
 
-	return toArray(entry.source).map(source => {
+	return toArray(entry.source).map((source) => {
 		return watch(source, { persistent })
-			.on('add', path => copy(source, path, targets))
-			.on('change', path => copy(source, path, targets))
-			.on('unlink', path => remove(source, path, targets))
-			.on('addDir', path => source !== path && copy(source, path, targets))
-			.on('unlinkDir', path => remove(source, path, targets));
+			.on('add', (path) => copy(source, path, targets))
+			.on('change', (path) => copy(source, path, targets))
+			.on('unlink', (path) => remove(source, path, targets))
+			.on('addDir', (path) => source !== path && copy(source, path, targets))
+			.on('unlinkDir', (path) => remove(source, path, targets));
 	});
 });
 
@@ -27,11 +27,11 @@ function getTargetPath(source, file, target) {
 }
 
 function remove(source, file, targets) {
-	targets.forEach(target => console.log(removeFileSync(getTargetPath(source, file, target))));
+	targets.forEach((target) => console.log(removeFileSync(getTargetPath(source, file, target))));
 }
 
 function copy(source, file, targets) {
-	targets.forEach(target => console.log(copyFolderRecursiveSync(file, getTargetPath(source, file, target))));
+	targets.forEach((target) => console.log(copyFolderRecursiveSync(file, getTargetPath(source, file, target))));
 }
 
 function copyFileSync(source, target) {
@@ -66,7 +66,7 @@ function copyFolderRecursiveSync(source, target) {
 	if (fs.lstatSync(source).isDirectory()) {
 		verifyFolderExists(target);
 
-		fs.readdirSync(source).forEach(file => {
+		fs.readdirSync(source).forEach((file) => {
 			const curSource = join(source, file);
 
 			if (fs.lstatSync(curSource).isDirectory()) {
@@ -85,7 +85,7 @@ function copyFolderRecursiveSync(source, target) {
 function removeFileSync(path) {
 	if (fs.existsSync(path)) {
 		if (fs.lstatSync(path).isDirectory()) {
-			fs.readdirSync(path).forEach(file => removeFileSync(`${path}/${file}`));
+			fs.readdirSync(path).forEach((file) => removeFileSync(`${path}/${file}`));
 			fs.rmdirSync(path);
 		} else {
 			fs.unlinkSync(path); // delete file
